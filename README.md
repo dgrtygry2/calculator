@@ -1,12 +1,5 @@
 # Calculator
-The Windows Calculator app is a modern Windows app written in C++ and C# that ships pre-installed with Windows.
-The app provides standard, scientific, and programmer calculator functionality, as well as a set of converters between various units of measurement and currencies.
-
-Calculator ships regularly with new features and bug fixes. You can get the latest version of Calculator in the [Microsoft Store](https://www.microsoft.com/store/apps/9WZDNCRFHVN5).
-
-[![Continuous Integration](https://github.com/microsoft/calculator/actions/workflows/action-ci.yml/badge.svg)](https://github.com/microsoft/calculator/actions/workflows/action-ci.yml)
-
-<img src="docs/Images/CalculatorScreenshot.png" alt="Calculator Screenshot" width="450px" />
+A fork of the now open-source Windows Calculator.
 
 ## Features
 - Standard Calculator functionality which offers basic operations and evaluates commands immediately as they are entered.
@@ -19,8 +12,12 @@ Calculator ships regularly with new features and bug fixes. You can get the late
 - [Infinite precision](https://en.wikipedia.org/wiki/Arbitrary-precision_arithmetic) for basic
   arithmetic operations (addition, subtraction, multiplication, division) so that calculations
   never lose precision.
+- Internet connection capabilities which allows you to connect the calculator to the network without using Windows taskbar.
 
 ## Getting started
+
+(NOTE: Basin Calculator can be downloaded from releases where a precompiled EXE of the calculator will be.)
+
 Prerequisites:
 - Your computer must be running Windows 11, build 22000 or newer.
 - Install the latest version of [Visual Studio](https://developer.microsoft.com/en-us/windows/downloads) (the free community edition is sufficient).
