@@ -1,0 +1,23 @@
+<Page x:Class="CalculatorApp.Views.WiFiPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      mc:Ignorable="d">
+
+    <StackPanel Padding="20">
+        <TextBlock Text="Available Wi-Fi Networks" FontSize="20" Margin="0,0,0,10"/>
+        
+        <ListView x:Name="WifiListView">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock Text="{Binding Ssid}" Width="200"/>
+                        <Button Content="Connect" Click="ConnectToNetwork"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <Button Content="Refresh" Click="RefreshNetworks" Margin="0,10,0,0"/>
+    </StackPanel>
+</Page>
