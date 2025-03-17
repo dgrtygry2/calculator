@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Windows.Devices.WiFi;
+using Windows.Security.Credentials;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.Security.Credentials;
 
 namespace CalculatorApp.Views
 {
@@ -16,7 +19,6 @@ namespace CalculatorApp.Views
             LoadWiFiNetworks();
         }
 
-        // Load Wi-Fi networks
         private async void LoadWiFiNetworks()
         {
             var access = await WiFiAdapter.RequestAccessAsync();
@@ -28,49 +30,85 @@ namespace CalculatorApp.Views
             wifiAdapter = await WiFiAdapter.FromIdAsync(devices[0].Id);
             await wifiAdapter.ScanAsync();
 
-            WifiListView.ItemsSource = wifiAdapter.NetworkReport.AvailableNetworks;
+            WifiListView.ItemsSource = wifiAdapter.NetworkReport.AvailableNetworks
+                .Select(network => new WiFiNetwork { Ssid = network.Ssid, Network = network })
+                .ToList();
         }
 
-        // Refresh the list of Wi-Fi networks
         private void RefreshNetworks(object sender, RoutedEventArgs e)
         {
             LoadWiFiNetworks();
         }
 
-        // Connect to a selected Wi-Fi network
         private async void ConnectToNetwork(object sender, RoutedEventArgs e)
         {
-            var selectedNetwork = (sender as Button).DataContext as WiFiAvailableNetwork;
+            var button = sender as Button;
+            var selectedNetwork = button.DataContext as WiFiNetwork;
 
-            // Prompt for the Wi-Fi password
-            var password = await ShowPasswordPromptAsync();
+            if (selectedNetwork == null) return;
+
+            var password = await ShowPasswordPromptAsync(selectedNetwork.Ssid);
             if (password == null) return;
 
-            var credentials = new PasswordCredential();
-            credentials.Password = password;
+            var credential = new PasswordCredential();
+            credential.Password = password;
 
-            // Attempt to connect
-            await wifiAdapter.ConnectAsync(selectedNetwork, WiFiReconnectionKind.Automatic, credentials);
+            await wifiAdapter.ConnectAsync(selectedNetwork.Network, WiFiReconnectionKind.Automatic, credential);
         }
 
-        // Show password input dialog
-        private async Task<string> ShowPasswordPromptAsync()
+        private async void ConnectToOtherNetwork(object sender, RoutedEventArgs e)
         {
-            var inputBox = new ContentDialog
+            var (ssid, password) = await ShowOtherNetworkDialogAsync();
+            if (string.IsNullOrEmpty(ssid) || string.IsNullOrEmpty(password)) return;
+
+            var credential = new PasswordCredential { Password = password };
+
+            await wifiAdapter.ConnectAsync(
+                new WiFiAvailableNetwork { Ssid = ssid },
+                WiFiReconnectionKind.Automatic,
+                credential
+            );
+        }
+
+        private async Task<string> ShowPasswordPromptAsync(string ssid)
+        {
+            TextBox passwordBox = new TextBox { PlaceholderText = "Enter Wi-Fi password", AcceptsReturn = false };
+            ContentDialog inputDialog = new ContentDialog
             {
-                Title = "Enter Wi-Fi Password",
+                Title = $"Enter password for {ssid}",
+                Content = passwordBox,
                 PrimaryButtonText = "Connect",
-                SecondaryButtonText = "Cancel",
-                Content = new TextBox { x:Name = "PasswordBox" }
+                CloseButtonText = "Cancel"
             };
 
-            var result = await inputBox.ShowAsync();
-            var passwordBox = (TextBox)inputBox.Content;
-
-            if (result == ContentDialogResult.Primary)
-                return passwordBox.Text;
-
-            return null;
+            var result = await inputDialog.ShowAsync();
+            return result == ContentDialogResult.Primary ? passwordBox.Text : null;
         }
+
+        private async Task<(string ssid, string password)> ShowOtherNetworkDialogAsync()
+        {
+            StackPanel panel = new StackPanel { Spacing = 10 };
+            TextBox ssidBox = new TextBox { PlaceholderText = "Network Name (SSID)" };
+            TextBox passwordBox = new TextBox { PlaceholderText = "Enter Wi-Fi password", AcceptsReturn = false };
+            panel.Children.Add(ssidBox);
+            panel.Children.Add(passwordBox);
+
+            ContentDialog inputDialog = new ContentDialog
+            {
+                Title = "Connect to Other Network",
+                Content = panel,
+                PrimaryButtonText = "Connect",
+                CloseButtonText = "Cancel"
+            };
+
+            var result = await inputDialog.ShowAsync();
+            return result == ContentDialogResult.Primary ? (ssidBox.Text, passwordBox.Text) : (null, null);
+        }
+    }
+
+    public class WiFiNetwork
+    {
+        public string Ssid { get; set; }
+        public WiFiAvailableNetwork Network { get; set; }
     }
 }
