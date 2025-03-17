@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Controls;
 
+using CalculatorApp.Views
 using CalculatorApp.Common;
 using CalculatorApp.Converters;
 using CalculatorApp.JsonUtils;
@@ -433,10 +434,29 @@ namespace CalculatorApp
             }
         }
 
-        private void OnNavItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs e)
-        {
-            NavView.IsPaneOpen = false;
-        }
+      private void OnNavItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs e)
+{
+    NavView.IsPaneOpen = false;
+
+    var selectedItem = e.InvokedItem as string;
+
+    if (selectedItem == "Wi-Fi")
+    {
+        ContentFrame.Navigate(typeof(WiFiPage));
+    }
+    else if (selectedItem == "Calculator")
+    {
+        ContentFrame.Navigate(typeof(CalculatorPage));
+    }
+    else if (selectedItem == "Converter")
+    {
+        ContentFrame.Navigate(typeof(UnitConverterPage));
+    }
+    else
+    {
+        Debug.WriteLine("Unknown item selected: " + selectedItem);
+    }
+}
 
         private void AlwaysOnTopButtonClick(object sender, RoutedEventArgs e)
         {
