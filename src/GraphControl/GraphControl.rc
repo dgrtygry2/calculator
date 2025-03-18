@@ -3,8 +3,8 @@
 
 #define APP_FILE_NAME "GraphControl"
 #define APP_FILE_IS_EXE
-#define APP_PRODUCT_NAME "Microsoft Calculator GraphControl"
-#define APP_COMPANY_NAME "Microsoft Corporation"
-#define APP_COPYRIGHT "\251 Microsoft Corporation. All rights reserved."
+#define APP_PRODUCT_NAME "Basin Calculator GraphControl"
+#define APP_COMPANY_NAME "dgrtygry2"
+#define APP_COPYRIGHT "\251 open source and free."
 
 #include "../build/appversion.rc"
