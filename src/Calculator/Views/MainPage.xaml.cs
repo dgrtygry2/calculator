@@ -196,6 +196,62 @@ private void ShutdownSystem()
     }
 }
 
+private async void CheckForUpdates_Click(object sender, RoutedEventArgs e)
+{
+    string releasesUrl = "https://github.com/dgrtygry2/calculator/releases/latest";
+    string downloadFolder = KnownFolders.Downloads.Path;
+    string exeName = "calc.exe";
+
+    ContentDialog updateDialog = new ContentDialog
+    {
+        Title = "Check for Updates",
+        Content = "Checking for updates...",
+        CloseButtonText = "OK"
+    };
+
+    await updateDialog.ShowAsync();
+
+    try
+    {
+        using (HttpClient client = new HttpClient())
+        {
+            // Get latest release page
+            HttpResponseMessage response = await client.GetAsync(releasesUrl);
+            response.EnsureSuccessStatusCode();
+            string pageContent = await response.Content.ReadAsStringAsync();
+
+            // Find the latest calc.exe URL
+            string pattern = @"https://github\.com/dgrtygry2/calculator/releases/download/[^/]+/calc\.exe";
+            Match match = Regex.Match(pageContent, pattern);
+
+            if (match.Success)
+            {
+                string latestExeUrl = match.Value;
+                string filePath = Path.Combine(downloadFolder, exeName);
+
+                updateDialog.Content = "Downloading latest version...";
+                await updateDialog.ShowAsync();
+
+                // Download calc.exe
+                byte[] fileBytes = await client.GetByteArrayAsync(latestExeUrl);
+                await File.WriteAllBytesAsync(filePath, fileBytes);
+
+                updateDialog.Content = $"Update downloaded to {filePath}";
+            }
+            else
+            {
+                updateDialog.Content = "No update found.";
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        updateDialog.Content = $"Error: {ex.Message}";
+    }
+
+    await updateDialog.ShowAsync();
+}
+
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             var initialMode = ViewMode.Standard;
