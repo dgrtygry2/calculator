@@ -50,7 +50,6 @@
         <selectors:NavViewMenuItemTemplateSelector x:Key="NavViewMenuItemTemplateSelector"
                                                    CategoryGroupItemTemplate="{StaticResource NavViewCategoryGroupItemDataTemplate}"
                                                    CategoryItemTemplate="{StaticResource NavViewCategoryItemDataTemplate}"/>
-
         <converters:BooleanToVisibilityNegationConverter x:Key="BooleanToVisibilityNegationConverter"/>
         <converters:BooleanNegationConverter x:Key="BooleanNegationConverter"/>
     </Page.Resources>
@@ -85,24 +84,6 @@
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
-        <StackPanel Visibility="Collapsed">
-            <!--
-                These buttons are only here to serve as the target for copy/paste commands
-                they are not to be shown, only to have the command and shortcut assigned to them.
-            -->
-            <Button x:Name="CopyButton"
-                    common:KeyboardShortcutManager.VirtualKeyControlChord="{utils:ResourceVirtualKey Name=copyButton/[using:CalculatorApp.Common]KeyboardShortcutManager/VirtualKeyControlChord}"
-                    Command="{x:Bind Model.CopyCommand}"/>
-            <Button x:Name="PasteButton"
-                    common:KeyboardShortcutManager.VirtualKeyControlChord="{utils:ResourceVirtualKey Name=pasteButton/[using:CalculatorApp.Common]KeyboardShortcutManager/VirtualKeyControlChord}"
-                    Command="{x:Bind Model.PasteCommand}"/>
-            <Button x:Name="CopyButtonAlternate"
-                    common:KeyboardShortcutManager.VirtualKeyControlChord="{utils:ResourceVirtualKey Name=copyButtonAlternate/[using:CalculatorApp.Common]KeyboardShortcutManager/VirtualKeyControlChord}"
-                    Command="{x:Bind Model.CopyCommand}"/>
-            <Button x:Name="PasteButtonAlternate"
-                    common:KeyboardShortcutManager.VirtualKeyShiftChord="{utils:ResourceVirtualKey Name=pasteButtonAlternate/[using:CalculatorApp.Common]KeyboardShortcutManager/VirtualKeyShiftChord}"
-                    Command="{x:Bind Model.PasteCommand}"/>
-        </StackPanel>
 
         <local:TitleBar x:Name="AppTitleBar"
                         Grid.Row="0"
@@ -131,54 +112,43 @@
                              TabIndex="1"
                              UseSystemFocusVisuals="True"
                              Visibility="{x:Bind Popup.IsOpen, Mode=OneWay, Converter={StaticResource BooleanToVisibilityNegationConverter}}">
-            <Grid>
-                <Grid>
-                    <Border x:Name="CalcHolder">
-                        <!-- PLACEHOLDER!!!! This is where the calculator goes when it is delay loaded -->
-                    </Border>
-                    <Border x:Name="DateCalcHolder">
-                        <!-- PLACEHOLDER!!!! This is where the date calculator goes when it is delay loaded -->
-                    </Border>
-                    <Border x:Name="GraphingCalcHolder">
-                        <!-- PLACEHOLDER!!!! This is where the graphing calculator goes when it is delay loaded -->
-                    </Border>
-                    <Border x:Name="ConverterHolder">
-                        <!-- PLACEHOLDER!!!! This is where the converter goes when it is delay loaded -->
-                    </Border>
-                </Grid>
-
-                <Grid Height="{StaticResource HamburgerHeight}"
-                      HorizontalAlignment="Left"
-                      VerticalAlignment="Top">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="{StaticResource HamburgerHeightGridLength}"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock x:Name="Header"
-                               Grid.Column="1"
-                               Style="{StaticResource CategoryNameTextBlockStyle}"
-                               Text="{x:Bind Model.CategoryName, Mode=OneWay}"
-                               Visibility="{x:Bind Model.IsAlwaysOnTop, Converter={StaticResource BooleanToVisibilityNegationConverter}, Mode=OneWay}"/>
-
-                    <Button x:Name="NormalAlwaysOnTopButton"
-                            Grid.Column="2"
-                            Style="{StaticResource SquareIconButtonStyle}"
-                            AutomationProperties.AutomationId="NormalAlwaysOnTopButton"
-                            AutomationProperties.Name="{utils:ResourceString Name=EnterAlwaysOnTopButton/[using:Windows.UI.Xaml.Automation]AutomationProperties/Name}"
-                            Click="AlwaysOnTopButtonClick"
-                            Content="&#xEE49;"
-                            TabIndex="3"
-                            ToolTipService.ToolTip="{utils:ResourceString Name=EnterAlwaysOnTopButton/[using:Windows.UI.Xaml.Controls]ToolTipService/ToolTip}"
-                            Visibility="{x:Bind Model.DisplayNormalAlwaysOnTopOption, Mode=OneWay}">
-                        <Button.KeyboardAccelerators>
-                            <KeyboardAccelerator Key="Up" Modifiers="Menu"/>
-                        </Button.KeyboardAccelerators>
-                    </Button>
-                </Grid>
-            </Grid>
+            <muxc:NavigationView.MenuItems>
+                <muxc:NavigationViewItem Content="Power Options"
+                                          Icon="Power"
+                                          Click="PowerOptionsButton_Click" />
+            </muxc:NavigationView.MenuItems>
         </muxc:NavigationView>
+
+        <Grid Height="{StaticResource HamburgerHeight}"
+              HorizontalAlignment="Left"
+              VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{StaticResource HamburgerHeightGridLength}"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock x:Name="Header"
+                      Grid.Column="1"
+                      Style="{StaticResource CategoryNameTextBlockStyle}"
+                      Text="{x:Bind Model.CategoryName, Mode=OneWay}"
+                      Visibility="{x:Bind Model.IsAlwaysOnTop, Converter={StaticResource BooleanToVisibilityNegationConverter}, Mode=OneWay}"/>
+
+            <Button x:Name="NormalAlwaysOnTopButton"
+                    Grid.Column="2"
+                    Style="{StaticResource SquareIconButtonStyle}"
+                    AutomationProperties.AutomationId="NormalAlwaysOnTopButton"
+                    AutomationProperties.Name="{utils:ResourceString Name=EnterAlwaysOnTopButton/[using:Windows.UI.Xaml.Automation]AutomationProperties/Name}"
+                    Click="AlwaysOnTopButtonClick"
+                    Content="&#xEE49;"
+                    TabIndex="3"
+                    ToolTipService.ToolTip="{utils:ResourceString Name=EnterAlwaysOnTopButton/[using:Windows.UI.Xaml.Controls]ToolTipService/ToolTip}"
+                    Visibility="{x:Bind Model.DisplayNormalAlwaysOnTopOption, Mode=OneWay}">
+                <Button.KeyboardAccelerators>
+                    <KeyboardAccelerator Key="Up" Modifiers="Menu"/>
+                </Button.KeyboardAccelerators>
+            </Button>
+        </Grid>
 
         <Popup x:Name="Popup"
                AutomationProperties.AccessibilityView="Raw"
