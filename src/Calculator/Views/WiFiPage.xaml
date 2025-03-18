@@ -6,13 +6,14 @@
 
     <StackPanel Padding="20">
         <TextBlock Text="Available Wi-Fi Networks" FontSize="20" Margin="0,0,0,10"/>
-        
+
         <ListView x:Name="WifiListView">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal" Spacing="10">
                         <TextBlock Text="{Binding Ssid}" Width="200"/>
                         <TextBlock Text="{Binding SignalEmoji}" FontSize="20"/>
+                        <TextBlock Text="{Binding IsConnected, Converter={StaticResource BoolToCheckEmojiConverter}}" FontSize="20"/>
                         <Button Content="Connect" Click="ConnectToNetwork"/>
                         <Button Content="Forget" Click="ForgetNetwork"/>
                     </StackPanel>
