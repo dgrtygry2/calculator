@@ -14,7 +14,7 @@ A fork of the now open-source Windows Calculator.
   never lose precision.
 - Internet connection capabilities which allows you to connect the calculator to the network.
 - Ability to shutdown windows from calculator! (This one was added cause it's cool and idk. I was bored.)
-
+- Update tool to be able to update the calculator.
 ## Getting started
 
 (NOTE: Basin Calculator can be downloaded from releases where a precompiled EXE of the calculator will be.)
