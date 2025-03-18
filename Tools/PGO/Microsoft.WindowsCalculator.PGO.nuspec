@@ -3,12 +3,12 @@
     <metadata>
         <id>Microsoft.WindowsCalculator.PGO</id>
         <version>$version$</version>
-        <authors>Microsoft</authors>
+        <authors>dgrtygry2</authors>
         <owners>sourceapps</owners>
         <projectUrl>https://microsoft.visualstudio.com/Apps/_git/calculator.app</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>A package containing the required files for Profile Guided Optimization for Calculator.</description>
-        <copyright>Microsoft Corporation. All rights reserved.</copyright>
+        <copyright>open source.</copyright>
         <tags>pgo</tags>
         <language>en-US</language>
     </metadata>
