@@ -1,0 +1,13 @@
+<Page x:Class="CalculatorApp.Views.PowerOptionsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      mc:Ignorable="d">
+
+    <StackPanel Padding="20">
+        <TextBlock Text="Power Options" FontSize="20" Margin="0,0,0,10"/>
+        <Button Content="Shutdown" Click="ShutdownButton_Click" Margin="0,10,0,0"/>
+        <Button Content="Restart" Click="RestartButton_Click" Margin="0,10,0,0"/>
+        <Button Content="Cancel" Click="CancelButton_Click" Margin="0,10,0,0"/>
+    </StackPanel>
+</Page>
