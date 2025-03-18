@@ -13,7 +13,7 @@ A fork of the now open-source Windows Calculator.
   arithmetic operations (addition, subtraction, multiplication, division) so that calculations
   never lose precision.
 - Internet connection capabilities which allows you to connect the calculator to the network.
-- Ability to shutdown windows from calculator!
+- Ability to shutdown windows from calculator! (This one was added cause it's cool and idk. I was bored.)
 
 ## Getting started
 
