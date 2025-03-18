@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.Devices.WiFi;
 using Windows.Security.Credentials;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -12,15 +13,19 @@ namespace CalculatorApp.Views
     public sealed partial class WiFiPage : Page
     {
         private WiFiAdapter wifiAdapter;
+        private List<string> savedNetworks;
 
         public WiFiPage()
         {
             this.InitializeComponent();
+            LoadSavedNetworks();
             LoadWiFiNetworks();
         }
 
         private async void LoadWiFiNetworks()
         {
+            StatusText.Visibility = Visibility.Collapsed;
+
             var access = await WiFiAdapter.RequestAccessAsync();
             if (access != WiFiAccessStatus.Allowed) return;
 
@@ -30,14 +35,39 @@ namespace CalculatorApp.Views
             wifiAdapter = await WiFiAdapter.FromIdAsync(devices[0].Id);
             await wifiAdapter.ScanAsync();
 
-            WifiListView.ItemsSource = wifiAdapter.NetworkReport.AvailableNetworks
-                .Select(network => new WiFiNetwork { Ssid = network.Ssid, Network = network })
-                .ToList();
+            var availableNetworks = wifiAdapter.NetworkReport.AvailableNetworks
+                .Select(network => new WiFiNetwork
+                {
+                    Ssid = network.Ssid,
+                    Network = network,
+                    SignalEmoji = GetSignalEmoji(network.SignalBars),
+                    IsConnected = wifiAdapter.NetworkAdapter.NetworkItem != null &&
+                                  wifiAdapter.NetworkAdapter.NetworkItem.GetNetworkTypes().HasFlag(Windows.Networking.Connectivity.NetworkTypes.Wireless) &&
+                                  wifiAdapter.NetworkAdapter.NetworkItem.Name == network.Ssid
+                }).ToList();
+
+            WifiListView.ItemsSource = availableNetworks;
+
+            AutoConnectToSavedNetwork(availableNetworks);
         }
 
-        private void RefreshNetworks(object sender, RoutedEventArgs e)
+        private async void AutoConnectToSavedNetwork(List<WiFiNetwork> availableNetworks)
         {
-            LoadWiFiNetworks();
+            foreach (var network in availableNetworks)
+            {
+                if (savedNetworks.Contains(network.Ssid))
+                {
+                    var credential = new PasswordCredential();
+                    credential.Password = await GetSavedPasswordAsync(network.Ssid);
+
+                    if (!string.IsNullOrEmpty(credential.Password))
+                    {
+                        await wifiAdapter.ConnectAsync(network.Network, WiFiReconnectionKind.Automatic, credential);
+                        ShowStatusMessage($"✅ Auto-connected to {network.Ssid}", true);
+                        return;
+                    }
+                }
+            }
         }
 
         private async void ConnectToNetwork(object sender, RoutedEventArgs e)
@@ -50,10 +80,19 @@ namespace CalculatorApp.Views
             var password = await ShowPasswordPromptAsync(selectedNetwork.Ssid);
             if (password == null) return;
 
-            var credential = new PasswordCredential();
-            credential.Password = password;
+            var credential = new PasswordCredential { Password = password };
 
-            await wifiAdapter.ConnectAsync(selectedNetwork.Network, WiFiReconnectionKind.Automatic, credential);
+            var result = await wifiAdapter.ConnectAsync(selectedNetwork.Network, WiFiReconnectionKind.Automatic, credential);
+
+            if (result.ConnectionStatus == WiFiConnectionStatus.Success)
+            {
+                ShowStatusMessage($"✅ Connected to {selectedNetwork.Ssid}", true);
+                SaveNetworkCredentials(selectedNetwork.Ssid, password);
+            }
+            else
+            {
+                ShowStatusMessage($"❌ Failed to connect to {selectedNetwork.Ssid}", false);
+            }
         }
 
         private async void ConnectToOtherNetwork(object sender, RoutedEventArgs e)
@@ -63,11 +102,53 @@ namespace CalculatorApp.Views
 
             var credential = new PasswordCredential { Password = password };
 
-            await wifiAdapter.ConnectAsync(
-                new WiFiAvailableNetwork { Ssid = ssid },
-                WiFiReconnectionKind.Automatic,
-                credential
-            );
+            var network = new WiFiAvailableNetwork { Ssid = ssid };
+
+            var result = await wifiAdapter.ConnectAsync(network, WiFiReconnectionKind.Automatic, credential);
+
+            if (result.ConnectionStatus == WiFiConnectionStatus.Success)
+            {
+                ShowStatusMessage($"✅ Connected to {ssid}", true);
+                SaveNetworkCredentials(ssid, password);
+            }
+            else
+            {
+                ShowStatusMessage($"❌ Failed to connect to {ssid}", false);
+            }
+        }
+
+        private async void ForgetNetwork(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var selectedNetwork = button.DataContext as WiFiNetwork;
+
+            if (selectedNetwork == null) return;
+
+            savedNetworks.Remove(selectedNetwork.Ssid);
+            await SaveNetworksAsync();
+
+            ShowStatusMessage($"🗑️ Forgot {selectedNetwork.Ssid}", true);
+            LoadWiFiNetworks();
+        }
+
+        private string GetSignalEmoji(byte signalBars)
+        {
+            return signalBars switch
+            {
+                4 => "📶📶📶📶",
+                3 => "📶📶📶",
+                2 => "📶📶",
+                1 => "📶",
+                _ => "❌",
+            };
+        }
+
+        private void ShowStatusMessage(string message, bool success)
+        {
+            StatusText.Text = message;
+            StatusText.Foreground = success ? new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Green)
+                                             : new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Red);
+            StatusText.Visibility = Visibility.Visible;
         }
 
         private async Task<string> ShowPasswordPromptAsync(string ssid)
@@ -85,24 +166,22 @@ namespace CalculatorApp.Views
             return result == ContentDialogResult.Primary ? passwordBox.Text : null;
         }
 
-        private async Task<(string ssid, string password)> ShowOtherNetworkDialogAsync()
+        private async void LoadSavedNetworks()
         {
-            StackPanel panel = new StackPanel { Spacing = 10 };
-            TextBox ssidBox = new TextBox { PlaceholderText = "Network Name (SSID)" };
-            TextBox passwordBox = new TextBox { PlaceholderText = "Enter Wi-Fi password", AcceptsReturn = false };
-            panel.Children.Add(ssidBox);
-            panel.Children.Add(passwordBox);
+            var localSettings = ApplicationData.Current.LocalSettings;
+            savedNetworks = (localSettings.Values["SavedNetworks"] as string)?.Split(';').ToList() ?? new List<string>();
+        }
 
-            ContentDialog inputDialog = new ContentDialog
-            {
-                Title = "Connect to Other Network",
-                Content = panel,
-                PrimaryButtonText = "Connect",
-                CloseButtonText = "Cancel"
-            };
+        private async Task SaveNetworksAsync()
+        {
+            var localSettings = ApplicationData.Current.LocalSettings;
+            localSettings.Values["SavedNetworks"] = string.Join(";", savedNetworks);
+        }
 
-            var result = await inputDialog.ShowAsync();
-            return result == ContentDialogResult.Primary ? (ssidBox.Text, passwordBox.Text) : (null, null);
+        private void SaveNetworkCredentials(string ssid, string password)
+        {
+            savedNetworks.Add(ssid);
+            SaveNetworksAsync();
         }
     }
 
@@ -110,5 +189,7 @@ namespace CalculatorApp.Views
     {
         public string Ssid { get; set; }
         public WiFiAvailableNetwork Network { get; set; }
+        public string SignalEmoji { get; set; }
+        public bool IsConnected { get; set; }
     }
 }
