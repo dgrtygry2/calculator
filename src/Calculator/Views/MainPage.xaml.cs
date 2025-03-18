@@ -202,6 +202,7 @@ private async void CheckForUpdates_Click(object sender, RoutedEventArgs e)
     string downloadFolder = KnownFolders.Downloads.Path;
     string exeName = "calc.exe";
 
+    // Create and show the update dialog
     ContentDialog updateDialog = new ContentDialog
     {
         Title = "Check for Updates",
@@ -220,7 +221,7 @@ private async void CheckForUpdates_Click(object sender, RoutedEventArgs e)
             response.EnsureSuccessStatusCode();
             string pageContent = await response.Content.ReadAsStringAsync();
 
-            // Find the latest calc.exe URL
+            // Find the latest calc.exe URL using a regular expression
             string pattern = @"https://github\.com/dgrtygry2/calculator/releases/download/[^/]+/calc\.exe";
             Match match = Regex.Match(pageContent, pattern);
 
@@ -229,26 +230,36 @@ private async void CheckForUpdates_Click(object sender, RoutedEventArgs e)
                 string latestExeUrl = match.Value;
                 string filePath = Path.Combine(downloadFolder, exeName);
 
+                // Update the dialog content and show it again with new message
                 updateDialog.Content = "Downloading latest version...";
                 await updateDialog.ShowAsync();
 
-                // Download calc.exe
+                // Download the file and save it to the user's Downloads folder
                 byte[] fileBytes = await client.GetByteArrayAsync(latestExeUrl);
                 await File.WriteAllBytesAsync(filePath, fileBytes);
 
+                // Update the dialog to show the success message
                 updateDialog.Content = $"Update downloaded to {filePath}";
             }
             else
             {
+                // No update found
                 updateDialog.Content = "No update found.";
             }
         }
     }
+    catch (HttpRequestException httpEx)
+    {
+        // Handle HTTP-specific exceptions
+        updateDialog.Content = $"Error during request: {httpEx.Message}";
+    }
     catch (Exception ex)
     {
+        // Handle all other exceptions
         updateDialog.Content = $"Error: {ex.Message}";
     }
 
+    // Show the dialog with the final message
     await updateDialog.ShowAsync();
 }
 
