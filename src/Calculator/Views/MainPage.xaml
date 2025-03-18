@@ -113,6 +113,7 @@
                              UseSystemFocusVisuals="True"
                              Visibility="{x:Bind Popup.IsOpen, Mode=OneWay, Converter={StaticResource BooleanToVisibilityNegationConverter}}">
             <muxc:NavigationView.MenuItems>
+                <!-- Add Power Options Button -->
                 <muxc:NavigationViewItem Content="Power Options"
                                           Icon="Power"
                                           Click="PowerOptionsButton_Click" />
