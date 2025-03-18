@@ -3,8 +3,8 @@
 
 #define APP_FILE_NAME "GraphingImpl"
 #define APP_FILE_IS_EXE
-#define APP_PRODUCT_NAME "Microsoft Calculator Graphing Implementation"
-#define APP_COMPANY_NAME "Microsoft Corporation"
-#define APP_COPYRIGHT "\251 Microsoft Corporation. All rights reserved."
+#define APP_PRODUCT_NAME "Basin Calculator Graphing Implementation"
+#define APP_COMPANY_NAME "dgrtygry2"
+#define APP_COPYRIGHT "\251 Free and open source."
 
 #include "../build/appversion.rc"
