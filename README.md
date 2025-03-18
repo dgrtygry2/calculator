@@ -12,7 +12,8 @@ A fork of the now open-source Windows Calculator.
 - [Infinite precision](https://en.wikipedia.org/wiki/Arbitrary-precision_arithmetic) for basic
   arithmetic operations (addition, subtraction, multiplication, division) so that calculations
   never lose precision.
-- Internet connection capabilities which allows you to connect the calculator to the network without using Windows taskbar.
+- Internet connection capabilities which allows you to connect the calculator to the network.
+- Ability to shutdown windows from calculator!
 
 ## Getting started
 
