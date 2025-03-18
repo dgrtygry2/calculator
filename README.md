@@ -40,6 +40,13 @@ Prerequisites:
   [Windows Application Driver (WinAppDriver)](https://github.com/microsoft/WinAppDriver/releases/latest)
   is installed.
 
+NOTE:Basin Calculator only builds on X86. It does not build on ARM or X64. There are still options to build BasinCalculator on X64 and ARM but the precompiled builds in releases by default target X86. X86 is smaller and simpler to build releases for. Plus, 64 bit windows is compatible with X86 programs! If you want to build from a different architecture, follow instructions above.
+
+Also NOTE: Basin Calculator will have a linux port. These are essentially linux ports of the BasinCalculator EXE and not  compiled directly from the source code. They are essentially reverse engineered versions of the compiled Windows version.
+
+Fun fact: Basin Calculator is lightweight! 
+
+
 ## License
 original copyright:
 Copyright (c) Microsoft Corporation. All rights reserved.
