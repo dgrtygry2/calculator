@@ -156,6 +156,46 @@ namespace CalculatorApp
             AutomationProperties.SetName(Header, name);
         }
 
+        private void PowerOptionsButton_Click(object sender, RoutedEventArgs e)
+{
+    var dialog = new ContentDialog
+    {
+        Title = "Power Options",
+        Content = "Are you sure you want to shut down the system?",
+        PrimaryButtonText = "Shutdown",
+        SecondaryButtonText = "Cancel"
+    };
+
+    dialog.PrimaryButtonClick += (s, args) =>
+    {
+        // Perform shutdown action
+        ShutdownSystem();
+    };
+
+    dialog.ShowAsync();
+}
+
+private void ShutdownSystem()
+{
+    try
+    {
+        // Shutdown the system
+        var process = new Windows.System.Diagnostics.ProcessLauncher();
+        process.Start("shutdown", "/s /f /t 0");  // Command to force shutdown immediately
+    }
+    catch (Exception ex)
+    {
+        // Handle errors during shutdown process
+        var errorDialog = new ContentDialog
+        {
+            Title = "Error",
+            Content = $"Failed to initiate shutdown: {ex.Message}",
+            CloseButtonText = "Ok"
+        };
+        errorDialog.ShowAsync();
+    }
+}
+
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             var initialMode = ViewMode.Standard;
