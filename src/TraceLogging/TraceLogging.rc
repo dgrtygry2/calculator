@@ -3,8 +3,8 @@
 
 #define APP_FILE_NAME "TraceLogging"
 #define APP_FILE_IS_EXE
-#define APP_PRODUCT_NAME "Microsoft Calculator TraceLogging"
-#define APP_COMPANY_NAME "Microsoft Corporation"
-#define APP_COPYRIGHT "\251 Microsoft Corporation. All rights reserved."
+#define APP_PRODUCT_NAME "Basin Calculator TraceLogging"
+#define APP_COMPANY_NAME "dgrtygry2"
+#define APP_COPYRIGHT "\251 free and open source 2025"
 
 #include "../build/appversion.rc"
