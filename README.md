@@ -20,7 +20,7 @@ A fork of the now open-source Windows Calculator.
 (NOTE: Basin Calculator can be downloaded from releases where a precompiled EXE of the calculator will be.)
 
 Prerequisites:
-- Your computer must be running Windows 11, build 22000 or newer.
+- Your computer must be running Windows 11, build 22000 or newer. (You can also build on win10 too.)
 - Install the latest version of [Visual Studio](https://developer.microsoft.com/en-us/windows/downloads) (the free community edition is sufficient).
   - Install the "Universal Windows Platform Development" workload.
   - Install the optional "C++ Universal Windows Platform tools" component.
